@@ -1,0 +1,115 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "ip": "127.0.0.1"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/"
+        },
+        "tlsSettings": {
+          "serverName": "nextjs.org", 
+          "allowInsecure": false,
+          "fingerprint": "firefox" 
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "tag": "proxy",
+      "settings": {
+        "vnext": [
+          {
+            "address": "43.225.90.75", 
+            "port": 443, 
+            "users": [
+              {
+                "id": "66c07ffa-eef0-4feb-97fd-88c3a2fc066f", 
+                "alterId": 0, 
+                "security": "none" 
+              }
+            ],
+            "tlsSettings": {
+              "serverName": "nextjs.org", 
+              "allowInsecure": false,
+              "fingerprint": "firefox" 
+            }
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/praiman"
+        },
+        "tlsSettings": {
+          "serverName": "nextjs.org",
+          "allowInsecure": false,
+          "fingerprint": "firefox"
+        }
+      }
+    },
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"  
+    }
+  ],
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "proxy",
+        "protocol": [
+          "tls",
+          "vless"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "proxy",
+        "domain": [
+          "geosite:openai.com"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "ip": [
+          "8.8.8.8",
+          "8.8.4.4",
+          "1.1.1.1"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "block",
+        "ip": [
+          "0.0.0.0/8",
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16"
+        ]
+      }
+    ]
+  }
+}
+
